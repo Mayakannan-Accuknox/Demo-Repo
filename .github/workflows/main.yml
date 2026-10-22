@@ -9,18 +9,39 @@ on:
 
 jobs:
   accuknox-aspm-scan:
-    name: AccuKnox ASPM Checks
+    name: Run AccuKnox Security Checks
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run AccuKnox Unified ASPM Scanner
-        uses: accuknox/accuknox-code-analysis@latest
+      # 1. Secret Scanning
+      - name: AccuKnox Secret Scanner
+        uses: accuknox/secret-scan-action@latest
+        continue-on-error: true
         with:
-          scan_type: "sast, secret, iac"
-          token: ${{ secrets.ACCUKNOX_TOKEN }}
-          endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
-          label: ${{ secrets.ACCUKNOX_LABEL }}
-          soft_fail: true
+          accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
+          accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
+          accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
+          soft_fail: "true"
+
+      # 2. Infrastructure as Code (IaC) Scanning
+      - name: AccuKnox IaC Scanner
+        uses: accuknox/iac-scan-action@latest
+        continue-on-error: true
+        with:
+          accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
+          accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
+          accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
+          soft_fail: "true"
+
+      # 3. SAST (Opengrep Engine) Scanning
+      - name: AccuKnox SAST Scanner
+        uses: accuknox/sast-scan-opengrep-action@latest
+        continue-on-error: true
+        with:
+          accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
+          accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
+          accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
+          soft_fail: "true"
