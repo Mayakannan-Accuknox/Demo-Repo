@@ -16,7 +16,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Secret Scanning
+      # 1. Secret Scanner (Install native TruffleHog to avoid ECR rate limits)
+      - name: Install TruffleHog
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
       - name: AccuKnox Secret Scanner
         uses: accuknox/secret-scan-action@latest
         continue-on-error: true
@@ -26,7 +30,15 @@ jobs:
           accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
           soft_fail: "true"
 
-      # 2. Infrastructure as Code (IaC) Scanning
+      # 2. IaC Scanner (Install native Checkov via pip)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Checkov
+        run: pip install checkov
+
       - name: AccuKnox IaC Scanner
         uses: accuknox/iac-scan-action@latest
         continue-on-error: true
@@ -36,7 +48,7 @@ jobs:
           accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
           soft_fail: "true"
 
-      # 3. SAST (Opengrep Engine) Scanning
+      # 3. SAST Scanner (Runs OpenGrep natively)
       - name: AccuKnox SAST Scanner
         uses: accuknox/sast-scan-opengrep-action@latest
         continue-on-error: true
