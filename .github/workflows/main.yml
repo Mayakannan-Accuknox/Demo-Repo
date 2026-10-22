@@ -2,47 +2,25 @@ name: AccuKnox ASPM CI/CD Scan
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "master" ]
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  accuknox-security-scans:
-    name: Run ASPM Checks
+  accuknox-aspm-scan:
+    name: AccuKnox ASPM Checks
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Secret Scanning
-      - name: AccuKnox Secret Scanner
-        uses: accuknox/secret-scan-action@v1
-        continue-on-error: true
+      - name: Run AccuKnox Unified ASPM Scanner
+        uses: accuknox/accuknox-code-analysis@latest
         with:
+          scan_type: "sast, secret, iac"
           token: ${{ secrets.ACCUKNOX_TOKEN }}
           endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
           label: ${{ secrets.ACCUKNOX_LABEL }}
-          soft_fail: "true"
-
-      # 2. Infrastructure as Code (IaC) Scan
-      - name: AccuKnox IaC Scanner
-        uses: accuknox/iac-scan-action@v1
-        continue-on-error: true
-        with:
-          token: ${{ secrets.ACCUKNOX_TOKEN }}
-          endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
-          label: ${{ secrets.ACCUKNOX_LABEL }}
-          soft_fail: "true"
-
-      # 3. Static Application Security Testing (SAST)
-      - name: AccuKnox SAST Scanner
-        uses: accuknox/sast-scan-action@v1
-        continue-on-error: true
-        with:
-          token: ${{ secrets.ACCUKNOX_TOKEN }}
-          endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
-          label: ${{ secrets.ACCUKNOX_LABEL }}
-          severity: "HIGH,CRITICAL"
-          soft_fail: "true"
+          soft_fail: true
