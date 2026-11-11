@@ -61,6 +61,6 @@ jobs:
           accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
           accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
           accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
-          image_name: "node"
-          image_tag: "14-alpine"
+          image_name: "test-node-app"
+          tag: "1.0"
           soft_fail: "true"
