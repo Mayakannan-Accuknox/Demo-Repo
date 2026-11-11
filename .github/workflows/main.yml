@@ -53,3 +53,13 @@ jobs:
           accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
           accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
           soft_fail: "true"
+      # 4. Container Scanner
+      - name: AccuKnox Container Scanner
+        uses: accuknox/container-scan-action@latest
+        continue-on-error: true
+        with:
+          accuknox_token: ${{ secrets.ACCUKNOX_TOKEN }}
+          accuknox_endpoint: ${{ secrets.ACCUKNOX_ENDPOINT }}
+          accuknox_label: ${{ secrets.ACCUKNOX_LABEL }}
+          image_name: "node:14-alpine"
+          soft_fail: "true"
